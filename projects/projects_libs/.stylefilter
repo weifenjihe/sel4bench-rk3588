@@ -1,0 +1,16 @@
+#
+# Copyright 2019, Data61, CSIRO (ABN 41 687 119 230)
+#
+# SPDX-License-Identifier: BSD-2-Clause
+#
+
+#
+# libtx2bpmp
+#
+
+# U-Boot sources, so don't style them
+*libtx2bpmp/src/bpmp.c
+*libtx2bpmp/src/ivc.c
+*libtx2bpmp/include/tx2bpmp/bpmp.h
+*libtx2bpmp/include/tx2bpmp/clock_bindings.h
+*libtx2bpmp/include/tx2bpmp/ivc.h

@@ -1,0 +1,1 @@
+projects/sel4bench/easy-settings.cmake
