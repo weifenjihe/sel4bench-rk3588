@@ -81,7 +81,7 @@ function(ApplyData61ElfLoaderSettings kernel_platform kernel_sel4_arch)
     endif()
     if(KernelPlatformRk3588)
         set(IMAGE_START_ADDR
-            0x20000000
+            0x52000000
             CACHE INTERNAL "" FORCE
         )
     endif()
