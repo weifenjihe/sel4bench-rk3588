@@ -207,8 +207,32 @@
 		pinctrl-0 = <0x16a>;
 		status = "disabled";
 		phandle = <0x2d1>;
-	};	
+	};
 
+	// virtio blk
+	virtio_mmio@ff9d0000 {
+		dma-coherent;
+		interrupt-parent = <0x01>;
+		interrupts = <0x0 0x2e 0x1>;
+		reg = <0x0 0xff9d0000 0x0 0x200>;
+		compatible = "virtio,mmio";
+	};
+
+	// virtio serial
+	virtio_mmio@ff9e0000 {
+		dma-coherent;
+		interrupt-parent = <0x01>;
+		interrupts = <0x0 0x2c 0x1>;
+		reg = <0x0 0xff9e0000 0x0 0x200>;
+		compatible = "virtio,mmio";
+	};
+
+	// 共享内存区域 - 用于 VirtIO 通信
+	shared_mem@9400000 {
+		compatible = "sel4,shared-mem";
+		reg = <0x0 0x9400000 0x0 0x100000>; // 1MB @ 0x9400000
+	};
+	
 	__symbols__ {
 		cpu_l2 = "/cpus/cpu@200";
 		cpu_l3 = "/cpus/cpu@300";

@@ -1,0 +1,99 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.7.5 Chrome/126.0.6478.183 Electron/31.3.0 Safari/537.36" version="24.7.5">
+  <diagram id="virtio-arch-diagram" name="VirtIO System Architecture">
+    <mxGraphModel dx="1077" dy="627" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="hw_layer" value="Physical Hardware Layer (RK3588)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;verticalAlign=top;fontStyle=1;spacingTop=10;" parent="1" vertex="1">
+          <mxGeometry x="40" y="520" width="770" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="phys_ram" value="Physical RAM" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+          <mxGeometry x="80" y="585" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="X8rcVihPlCW_RbaNs-IK-1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="shared_mem_phys" target="gic">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="shared_mem_phys" value="Shared Physical Frame&lt;br&gt;(VirtIO MMIO Region)&lt;br&gt;0x20000000 (Example)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="320" y="560" width="200" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="gic" value="GIC (Interrupt Controller)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
+          <mxGeometry x="610" y="575" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="hyp_layer" value="Hypervisor Layer (EL2)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;verticalAlign=middle;fontStyle=1;fontSize=14;" parent="1" vertex="1">
+          <mxGeometry x="40" y="440" width="760" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow_map_linux" value="Stage-2 Map" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.474;entryY=0.018;entryDx=0;entryDy=0;dashed=1;entryPerimeter=0;" parent="1" source="hyp_layer" target="shared_mem_phys" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow_map_sel4" value="Stage-2 Map" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;dashed=1;" parent="1" source="hyp_layer" target="shared_mem_phys" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="linux_guest" value="Guest 1: Linux (EL1)" style="swimlane;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;startSize=30;" parent="1" vertex="1">
+          <mxGeometry x="40" y="80" width="340" height="340" as="geometry" />
+        </mxCell>
+        <mxCell id="linux_app" value="User App (e.g., cat /dev/hvc0)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="linux_guest" vertex="1">
+          <mxGeometry x="40" y="50" width="260" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="linux_kernel" value="Linux Kernel" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;verticalAlign=top;spacingTop=5;" parent="linux_guest" vertex="1">
+          <mxGeometry x="20" y="120" width="300" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="virtio_driver" value="virtio-console driver" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" parent="linux_guest" vertex="1">
+          <mxGeometry x="40" y="150" width="260" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="virtio_ring_linux" value="Virtqueues (vring)" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="linux_guest" vertex="1">
+          <mxGeometry x="40" y="210" width="260" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="mmio_access_linux" value="MMIO Access (IPA)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;" parent="linux_guest" vertex="1">
+          <mxGeometry x="40" y="290" width="260" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="sel4_guest" value="Guest 2: seL4 (EL1)" style="swimlane;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;startSize=30;" parent="1" vertex="1">
+          <mxGeometry x="460" y="80" width="340" height="340" as="geometry" />
+        </mxCell>
+        <mxCell id="sel4_app" value="virtio_demo (User App)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1" parent="sel4_guest" vertex="1">
+          <mxGeometry x="40" y="50" width="260" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="sel4_libvirtio" value="libvirtio &amp; virtio_con.h" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fillColor=#f5f5f5;" parent="sel4_guest" vertex="1">
+          <mxGeometry x="60" y="70" width="220" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ps_io_map" value="ps_io_map()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="sel4_guest" vertex="1">
+          <mxGeometry x="60" y="130" width="220" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="sel4_kernel" value="seL4 Kernel" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;verticalAlign=top;spacingTop=5;" parent="sel4_guest" vertex="1">
+          <mxGeometry x="20" y="200" width="300" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="vspace_mapping" value="VSpace / EPT Mapping" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;" parent="sel4_guest" vertex="1">
+          <mxGeometry x="40" y="240" width="260" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="flow_linux" value="Read/Write" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;strokeWidth=2;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" source="virtio_ring_linux" target="shared_mem_phys" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="150" y="330" />
+              <mxPoint x="150" y="560" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="flow_sel4" value="Read/Write (MMIO)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;strokeWidth=2;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" source="ps_io_map" target="shared_mem_phys" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="630" y="180" />
+              <mxPoint x="630" y="480" />
+              <mxPoint x="490" y="480" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="irq_linux" value="vIRQ (Doorbell)" style="endArrow=classic;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;dashed=1;strokeColor=#FF3333;" parent="1" source="gic" target="linux_kernel" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="470" y="420" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="irq_sel4" value="vIRQ (Doorbell)" style="endArrow=classic;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;dashed=1;strokeColor=#FF3333;" parent="1" source="gic" target="sel4_kernel" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

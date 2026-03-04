@@ -95,7 +95,8 @@ function(general_regs_only target)
     endif()
 endfunction()
 
-add_subdirectory(apps/sel4bench)
+# add_subdirectory(apps/sel4bench)
+add_subdirectory(apps/virtio_demo)
 
 include(simulation)
 GenerateSimulateScript()

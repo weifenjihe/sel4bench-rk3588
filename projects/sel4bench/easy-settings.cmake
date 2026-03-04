@@ -18,7 +18,7 @@
 # ../griddle --PLATFORM=sabre --SIMULATION ninja
 #
 set(RELEASE
-    ON
+    OFF
     CACHE BOOL "Performance optimized build"
 )
 set(PLATFORM
@@ -43,7 +43,7 @@ set(MCS
 
 # default is OFF
 set(HARDWARE
-    OFF
+    ON
     CACHE BOOL "Application to benchmark hardware-related operations"
 )
 
@@ -79,13 +79,13 @@ set(IRQUSER
 
 # default is ON
 set(SCHED
-    ON
+    OFF
     CACHE BOOL "Application to benchmark seL4 scheduler"
 )
 
 # default is ON
 set(SIGNAL
-    ON
+    OFF
     CACHE BOOL "Application to benchmark seL4 signals"
 )
 
@@ -97,7 +97,7 @@ set(MAPPING
 
 # default is ON
 set(SYNC
-    ON
+    OFF
     CACHE BOOL "Application to benchmark seL4 sync"
 )
 
