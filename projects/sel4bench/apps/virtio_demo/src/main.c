@@ -85,12 +85,6 @@ int main(void) {
     // Suspend self (Loop send for testing)
     while (1) {
         seL4_Yield();
-        
-        // Delay loop to avoid flooding
-        for (volatile int i = 0; i < 50000000; i++); 
-        
-        virtio_console_send("Ping from seL4...\n");
-        seL4_DebugPutChar('.'); 
     }
     
     return 0;
