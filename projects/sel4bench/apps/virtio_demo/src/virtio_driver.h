@@ -18,4 +18,7 @@ int virtio_driver_init(vspace_t *vspace, vka_t *vka);
 // Send a simple string message via VirtIO Console
 int virtio_console_send(const char *msg);
 
+// Poll receive path. Returns >0 bytes received, 0 if no data, <0 on error.
+int virtio_console_recv(char *buf, size_t buf_sz);
+
 #endif // VIRTIO_DRIVER_H

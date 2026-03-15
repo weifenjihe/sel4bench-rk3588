@@ -41,6 +41,27 @@ allocman_t *allocman;
 extern char *morecore_area;
 extern size_t morecore_size;
 
+static void debug_puts(const char *s)
+{
+    while (*s) {
+        seL4_DebugPutChar(*s++);
+    }
+}
+
+static void flush_rx_line(char *line_buf, size_t *line_len)
+{
+    if (*line_len == 0) {
+        return;
+    }
+    line_buf[*line_len] = '\0';
+    debug_puts("RX: ");
+    debug_puts(line_buf);
+    if (line_buf[*line_len - 1] != '\n') {
+        seL4_DebugPutChar('\n');
+    }
+    *line_len = 0;
+}
+
 int main(void) {
     int error;
     
@@ -82,9 +103,29 @@ int main(void) {
 
     seL4_DebugPutChar('D'); seL4_DebugPutChar('O'); seL4_DebugPutChar('N'); seL4_DebugPutChar('E'); seL4_DebugPutChar('\n');
     
-    // Suspend self (Loop send for testing)
+    // Poll receive path: Linux -> seL4
+    char rx_buf[256];
+    char line_buf[512];
+    size_t line_len = 0;
     while (1) {
-        seL4_Yield();
+        int handled = 0;
+        int r;
+        while ((r = virtio_console_recv(rx_buf, sizeof(rx_buf))) > 0) {
+            handled = 1;
+            for (int i = 0; i < r; i++) {
+                char c = rx_buf[i];
+                if (line_len < sizeof(line_buf) - 1) {
+                    line_buf[line_len++] = c;
+                }
+                if (c == '\n' || line_len == sizeof(line_buf) - 1) {
+                    flush_rx_line(line_buf, &line_len);
+                }
+            }
+        }
+        if (!handled) {
+            flush_rx_line(line_buf, &line_len);
+            seL4_Yield();
+        }
     }
     
     return 0;
