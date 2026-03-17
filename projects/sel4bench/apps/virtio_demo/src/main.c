@@ -22,6 +22,7 @@
 #include <sel4utils/process.h>
 
 #include "virtio_driver.h"
+#include "virtio_perf.h"
 
 // Allocator memory
 #define ALLOCATOR_STATIC_POOL_SIZE ((1 << seL4_PageBits) * 100)
@@ -48,8 +49,99 @@ static void debug_puts(const char *s)
     }
 }
 
+static void debug_put_u64(uint64_t v)
+{
+    char buf[32];
+    int n = snprintf(buf, sizeof(buf), "%llu", (unsigned long long)v);
+    if (n > 0) {
+        debug_puts(buf);
+    }
+}
+
+static void print_perf_stats(const char *title, const virtio_perf_stats_t *st)
+{
+    debug_puts(title);
+    debug_puts(" iters=");
+    debug_put_u64(st->iterations);
+    if (st->payload_bytes > 0) {
+        debug_puts(" bytes=");
+        debug_put_u64(st->payload_bytes);
+    }
+    debug_puts(" min=");
+    debug_put_u64(st->min_cycles);
+    debug_puts(" avg=");
+    debug_put_u64(st->avg_cycles);
+    debug_puts(" max=");
+    debug_put_u64(st->max_cycles);
+    debug_puts(" total=");
+    debug_put_u64(st->total_cycles);
+    debug_puts(" cycles\n");
+}
+
+static int parse_u32(const char *s, uint32_t *val, const char **next)
+{
+    char *end = NULL;
+    unsigned long v;
+    while (*s == ' ') {
+        s++;
+    }
+    if (*s == '\0') {
+        return -1;
+    }
+    v = strtoul(s, &end, 10);
+    if (end == s || v > 0xfffffffful) {
+        return -1;
+    }
+    *val = (uint32_t)v;
+    *next = end;
+    return 0;
+}
+
+static void handle_perf_command(const char *line)
+{
+    if (strcmp(line, "bench help") == 0) {
+        debug_puts("BENCH CMD: bench send <iters> <bytes> | bench poll <iters>\n");
+        return;
+    }
+
+    if (strncmp(line, "bench send ", 11) == 0) {
+        uint32_t iters;
+        uint32_t bytes;
+        const char *p = line + 11;
+        virtio_perf_stats_t st;
+        if (parse_u32(p, &iters, &p) != 0 || parse_u32(p, &bytes, &p) != 0) {
+            debug_puts("BENCH ERR: usage bench send <iters> <bytes>\n");
+            return;
+        }
+        if (virtio_perf_bench_send(iters, bytes, &st) != 0) {
+            debug_puts("BENCH ERR: send benchmark failed\n");
+            return;
+        }
+        print_perf_stats("BENCH SEND", &st);
+        return;
+    }
+
+    if (strncmp(line, "bench poll ", 11) == 0) {
+        uint32_t iters;
+        const char *p = line + 11;
+        virtio_perf_stats_t st;
+        if (parse_u32(p, &iters, &p) != 0) {
+            debug_puts("BENCH ERR: usage bench poll <iters>\n");
+            return;
+        }
+        if (virtio_perf_bench_poll_recv(iters, &st) != 0) {
+            debug_puts("BENCH ERR: poll benchmark failed\n");
+            return;
+        }
+        print_perf_stats("BENCH POLL", &st);
+        return;
+    }
+}
+
 static void flush_rx_line(char *line_buf, size_t *line_len)
 {
+    size_t n;
+
     if (*line_len == 0) {
         return;
     }
@@ -59,6 +151,16 @@ static void flush_rx_line(char *line_buf, size_t *line_len)
     if (line_buf[*line_len - 1] != '\n') {
         seL4_DebugPutChar('\n');
     }
+
+    n = *line_len;
+    while (n > 0 && (line_buf[n - 1] == '\n' || line_buf[n - 1] == '\r')) {
+        n--;
+    }
+    line_buf[n] = '\0';
+    if (strncmp(line_buf, "bench ", 6) == 0) {
+        handle_perf_command(line_buf);
+    }
+
     *line_len = 0;
 }
 
@@ -73,6 +175,7 @@ int main(void) {
 
     // 1. Initialize Simple (Abstracts BootInfo)
     simple_default_init_bootinfo(&simple, info);
+    debug_puts("seL4 VirtIO Demo Starting...\n");
 
     // 2. Initialize Allocator (Manages memory)
     allocman = bootstrap_use_current_simple(&simple, ALLOCATOR_STATIC_POOL_SIZE, allocator_mem_pool);
@@ -80,6 +183,7 @@ int main(void) {
         return -1;
     }
     allocman_make_vka(&vka, allocman);
+    debug_puts("Allocator Initialized\n");
 
     // 3. Initialize VSpace (Virtual Memory)
     sel4utils_alloc_data_t data;
@@ -87,22 +191,20 @@ int main(void) {
     if (error) {
         return -1;
     }
-
-    seL4_DebugPutChar('S'); seL4_DebugPutChar('S'); seL4_DebugPutChar('\n');
+    debug_puts("VSpace Initialized\n");
 
     // 4. Initialize VirtIO Driver
     if (virtio_driver_init(&vspace, &vka) != 0) {
-        seL4_DebugPutChar('F'); seL4_DebugPutChar('A'); seL4_DebugPutChar('I'); seL4_DebugPutChar('L'); seL4_DebugPutChar('\n');
+        debug_puts("VirtIO Driver Initialization Failed\n");
         return -1;
     }
-
-    seL4_DebugPutChar('O'); seL4_DebugPutChar('K'); seL4_DebugPutChar('\n');
+    debug_puts("VirtIO Driver Initialized\n");
 
     // 5. Send Message to Linux
     virtio_console_send("Hello from seL4 VirtIO!\n");
+    virtio_perf_init();
+    debug_puts("Type: bench help\n");
 
-    seL4_DebugPutChar('D'); seL4_DebugPutChar('O'); seL4_DebugPutChar('N'); seL4_DebugPutChar('E'); seL4_DebugPutChar('\n');
-    
     // Poll receive path: Linux -> seL4
     char rx_buf[256];
     char line_buf[512];

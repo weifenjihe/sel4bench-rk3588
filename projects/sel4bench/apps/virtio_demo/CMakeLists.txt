@@ -70,7 +70,7 @@ message(STATUS "Configuring virtio_demo app...")
 add_config_library(virtio_demo "${configure_string}")
 
 # 只需要 main.c
-add_executable(virtio_demo src/main.c src/virtio_driver.c)
+add_executable(virtio_demo src/main.c src/virtio_driver.c src/virtio_perf.c)
 
 # 链接必要的库，包括 sel4benchsupport 和 virtio
 target_link_libraries(
