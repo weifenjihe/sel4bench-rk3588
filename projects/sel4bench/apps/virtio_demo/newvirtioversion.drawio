@@ -1,0 +1,171 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.7.5 Chrome/126.0.6478.183 Electron/31.3.0 Safari/537.36" version="24.7.5">
+  <diagram id="new-virtio-version" name="New VirtIO Version">
+    <mxGraphModel dx="1302" dy="758" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="y7oUqgjuS_jYOi6olDFh-14" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#e1f7d5;strokeColor=#67AB9F;strokeWidth=4;" vertex="1" parent="1">
+          <mxGeometry x="510" y="250" width="130" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="y7oUqgjuS_jYOi6olDFh-15" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeWidth=4;strokeColor=#67ab9f;" vertex="1" parent="1">
+          <mxGeometry x="520" y="260" width="110" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="rl_user_label" value="用户态" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="20" y="330" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="rl_kernel_label" value="内核态" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="20" y="380" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="root_linux" value="Root Linux" style="swimlane;whiteSpace=wrap;html=1;startSize=23;fillColor=#e1f7d5;strokeColor=#000000;swimlaneFillColor=#e1f7d5;" parent="1" vertex="1">
+          <mxGeometry x="80" y="80" width="370" height="400" as="geometry" />
+        </mxCell>
+        <mxCell id="virtio_daemon" value="Virtio守护进程" style="swimlane;whiteSpace=wrap;html=1;fillColor=#e1f7d5;strokeColor=#none;startSize=23;" vertex="1" parent="root_linux">
+          <mxGeometry x="20" y="40" width="320" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="vblk" value="Virtio-console&lt;br&gt;设备" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="virtio_daemon">
+          <mxGeometry x="100" y="50" width="100" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="dispatcher" value="分发器" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="virtio_daemon">
+          <mxGeometry x="30" y="160" width="240" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="conn_disp_blk" style="endArrow=classic;html=1;exitX=0.5;exitY=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitDx=0;exitDy=0;" edge="1" parent="virtio_daemon" source="dispatcher" target="vblk">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="y7oUqgjuS_jYOi6olDFh-4" value="" style="endArrow=classic;html=1;rounded=0;dashed=1;" edge="1" parent="virtio_daemon">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="260" y="210" as="sourcePoint" />
+            <mxPoint x="260" y="400" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rl_sep" value="" style="endArrow=none;dashed=1;html=1;dashPattern=8 8;strokeWidth=2;exitX=0;exitY=0.7;entryX=1;entryY=0.7;" parent="root_linux" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint y="290" as="sourcePoint" />
+            <mxPoint x="370" y="290" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="hyp_svc" value="Hypervisor服务模块" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="root_linux">
+          <mxGeometry x="60" y="320" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="ioctl_arrow" value="" style="endArrow=classic;html=1;dashed=1;exitX=0.25;exitY=1;fontColor=#009900;strokeColor=#009900;" edge="1" parent="root_linux" source="dispatcher">
+          <mxGeometry x="-0.25" y="-20" relative="1" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="110" y="320" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="y7oUqgjuS_jYOi6olDFh-3" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.282;exitY=-0.032;exitDx=0;exitDy=0;exitPerimeter=0;dashed=1;" edge="1" parent="root_linux">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="236.8800000000001" y="443.4" as="sourcePoint" />
+            <mxPoint x="237" y="250" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="y7oUqgjuS_jYOi6olDFh-23" value="ioctl" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="root_linux">
+          <mxGeometry x="100" y="250" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="other_vm" value="seL4" style="swimlane;whiteSpace=wrap;html=1;startSize=23;fillColor=#ffffff;strokeColor=#000000;" parent="1" vertex="1">
+          <mxGeometry x="680" y="80" width="240" height="400" as="geometry" />
+        </mxCell>
+        <mxCell id="ovm_sep" value="" style="endArrow=none;dashed=1;html=1;dashPattern=8 8;strokeWidth=2;exitX=0;exitY=0.5;entryX=1;entryY=0.5;" parent="other_vm" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint y="200" as="sourcePoint" />
+            <mxPoint x="240" y="200" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="user_proc" value="User App&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="other_vm">
+          <mxGeometry x="50" y="50" width="140" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="virtio_driver" value="Virtio Driver" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="other_vm">
+          <mxGeometry x="50" y="270" width="140" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="seL4_call_arrow" value="API Call" style="endArrow=classic;html=1;entryX=0.5;entryY=0;exitX=0.5;exitY=1;" edge="1" parent="other_vm" source="user_proc" target="virtio_driver">
+          <mxGeometry x="-0.2857" y="-30" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="y7oUqgjuS_jYOi6olDFh-24" value="help" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="other_vm">
+          <mxGeometry x="60" y="100" width="30" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="y7oUqgjuS_jYOi6olDFh-31" value="send" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="other_vm">
+          <mxGeometry x="105" y="100" width="30" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="y7oUqgjuS_jYOi6olDFh-32" value="recv" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="other_vm">
+          <mxGeometry x="150" y="100" width="30" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="rm_user_label" value="用户态" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="920" y="250" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="rm_kernel_label" value="内核态" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="920" y="280" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="hvisor_bar" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f9f7ed;strokeColor=#36393d;" parent="1" vertex="1">
+          <mxGeometry x="80" y="520" width="840" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="hvisor_label" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Hvisor&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;" parent="1" vertex="1">
+          <mxGeometry x="20" y="555" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="req_sub_q" value="请求提交队列" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#a9f2ce;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="280" y="545" width="180" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="req_res_q" value="请求结果队列" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#a9f2ce;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="600" y="545" width="180" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="vq_circle2" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#e1f7d5;strokeColor=#67AB9F;strokeWidth=4;" parent="1" vertex="1">
+          <mxGeometry x="520" y="270" width="130" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="hvc_arrow" value="hvc" style="endArrow=classic;html=1;strokeColor=#0099CC;strokeWidth=2;fontColor=#0099CC;exitX=0.5;exitY=1;entryX=0.167;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="hyp_svc" target="hvisor_bar">
+          <mxGeometry x="0.1417" y="-10" relative="1" as="geometry">
+            <mxPoint x="220" y="520" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vq_to_root2" value="" style="endArrow=classic;startArrow=classic;html=1;dashed=1;strokeColor=#009900;strokeWidth=2;entryX=1;entryY=0.5;" edge="1" parent="1" target="vblk">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="515.021550100759" y="289.9483424164348" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vq_to_driver" value="" style="endArrow=classic;startArrow=classic;html=1;dashed=1;strokeColor=#009900;strokeWidth=2;entryX=0;entryY=0.5;exitX=1;exitY=0.5;" edge="1" parent="1" source="vq_circle2" target="virtio_driver">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="vm_exit" value="VM Exit" style="endArrow=classic;html=1;dashed=1;strokeColor=#000000;strokeWidth=1;exitX=0.25;exitY=1;" edge="1" parent="1" source="virtio_driver">
+          <mxGeometry x="0.5556" y="-25" relative="1" as="geometry">
+            <mxPoint x="765" y="520" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vm_entry" value="VM Entry" style="endArrow=classic;html=1;dashed=1;strokeColor=#000000;strokeWidth=1;" edge="1" parent="1">
+          <mxGeometry x="-0.5556" y="-30" relative="1" as="geometry">
+            <mxPoint x="820" y="430" as="targetPoint" />
+            <mxPoint x="820" y="520" as="sourcePoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="y7oUqgjuS_jYOi6olDFh-2" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;通信跳板&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="90" y="560" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="y7oUqgjuS_jYOi6olDFh-6" value="&lt;font color=&quot;#e40c0c&quot;&gt;共享内存&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="360" y="490" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="y7oUqgjuS_jYOi6olDFh-8" value="&lt;b&gt;&lt;font color=&quot;#5d32d2&quot; style=&quot;font-size: 14px;&quot;&gt;Virtqueue&lt;/font&gt;&lt;/b&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeWidth=4;strokeColor=#67ab9f;" vertex="1" parent="1">
+          <mxGeometry x="530" y="280" width="110" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="y7oUqgjuS_jYOi6olDFh-13" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#cce5ff;strokeColor=#1f89f9;" vertex="1" parent="1">
+          <mxGeometry x="565" y="250" width="20" height="10" as="geometry" />
+        </mxCell>
+        <mxCell id="y7oUqgjuS_jYOi6olDFh-18" value="" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f89f9;" vertex="1" parent="1">
+          <mxGeometry x="525" y="170" width="80" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="y7oUqgjuS_jYOi6olDFh-19" value="" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f89f9;" vertex="1" parent="1">
+          <mxGeometry x="535" y="180" width="80" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="y7oUqgjuS_jYOi6olDFh-20" value="&lt;font color=&quot;#1f89f9&quot;&gt;共享内存&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#1f89f9;" vertex="1" parent="1">
+          <mxGeometry x="545" y="190" width="80" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="y7oUqgjuS_jYOi6olDFh-21" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="1" source="y7oUqgjuS_jYOi6olDFh-13" target="y7oUqgjuS_jYOi6olDFh-20">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="630" y="290" as="sourcePoint" />
+            <mxPoint x="680" y="240" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
