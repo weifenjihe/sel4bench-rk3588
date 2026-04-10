@@ -1,7 +1,7 @@
 # Top-level build helper for this workspace
 
-PLATFORM ?= rk3588
-AARCH64 ?= 1
+PLATFORM ?= hifive-p550
+KERNEL_SEL4_ARCH ?= riscv64
 BUILD_DIR ?= cbuild
 INIT_BUILD ?= ../init-build.sh
 NINJA ?= ninja
@@ -16,8 +16,8 @@ clean:
 
 configure:
 	@mkdir -p $(BUILD_DIR)
-	@echo "Configuring PLATFORM=$(PLATFORM) AARCH64=$(AARCH64)"
-	@cd $(BUILD_DIR) && $(INIT_BUILD) -DPLATFORM=$(PLATFORM) -DAARCH64=$(AARCH64)
+	@echo "Configuring PLATFORM=$(PLATFORM) KERNEL_SEL4_ARCH=$(KERNEL_SEL4_ARCH)"
+	@cd $(BUILD_DIR) && $(INIT_BUILD) -DPLATFORM=$(PLATFORM) -DKernelSel4Arch=$(KERNEL_SEL4_ARCH)
 
 build: configure
 	@echo "Building in $(BUILD_DIR)"
