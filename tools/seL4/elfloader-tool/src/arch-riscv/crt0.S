@@ -20,6 +20,7 @@
 #define SBI_HSM_BASE_HART_STOP 1
 #define SBI_EXT_BASE 0x10
 #define SBI_EXT_BASE_PROBE_EXT 3
+#define DTB_MAGIC 0xedfe0dd0
 
 .section ".text.start"
 
@@ -55,6 +56,24 @@ _start:
   mv s0, a0 /* preserve a0 (hart id) in s0 */
   mv s2, a1 /* preserve a1 (dtb) in s2 */
 
+  /*
+   * Binary images started with U-Boot `go` do not follow the OpenSBI
+   * calling convention (a0=hartid, a1=dtb). If the incoming values look
+   * invalid, fall back to first hart and use the DTB embedded in CPIO.
+   */
+  li t0, CONFIG_FIRST_HART_ID
+  bltu s0, t0, boot_args_fallback
+  li t1, CONFIG_MAX_NUM_NODES
+  add t1, t1, t0
+  bgeu s0, t1, boot_args_fallback
+  beqz s2, boot_args_ok
+  andi t0, s2, 0x3
+  bnez t0, boot_args_fallback
+  lw t0, 0(s2)
+  li t1, DTB_MAGIC
+  bne t0, t1, boot_args_fallback
+boot_args_ok:
+
   /* Attach the stack to sp before calling any C functions */
   la sp, (core_stack_alloc + BIT(12))
 
@@ -75,6 +94,11 @@ _start:
   mv a0, s0
   mv a1, s2
   jr a2
+
+boot_args_fallback:
+  li s0, CONFIG_FIRST_HART_ID
+  li s2, 0
+  j boot_args_ok
 
 /* Clear the BSS before we get to do anything more specific */
 1:

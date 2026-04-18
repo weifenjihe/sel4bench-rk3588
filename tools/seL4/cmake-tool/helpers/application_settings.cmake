@@ -11,10 +11,10 @@ include_guard(GLOBAL)
 
 function(ApplyData61ElfLoaderSettings kernel_platform kernel_sel4_arch)
     set(binary_list
-        "tx1;hikey;odroidc2;odroidc4;imx8mq-evk;imx8mm-evk;imx8mp-evk;hifive;bcm2837;tqma8xqp1gb;imx93;bcm2711;rocketchip;star64;rk3568;rk3588"
+        "tx1;hikey;odroidc2;odroidc4;imx8mq-evk;imx8mm-evk;imx8mp-evk;hifive;bcm2837;tqma8xqp1gb;imx93;bcm2711;rocketchip;star64;rk3568;rk3588;hifive-p550"
     )
     set(efi_list "tk1;rockpro64;quartz64")
-    set(uimage_list "hifive-p550;tx2;am335x;bananapi-f3")
+    set(uimage_list "tx2;am335x;bananapi-f3")
     if(${kernel_platform} IN_LIST efi_list OR (${kernel_platform} STREQUAL "hikey"
                                                AND ${kernel_sel4_arch} STREQUAL "aarch64")
     )
@@ -137,6 +137,10 @@ function(ApplyData61ElfLoaderSettings kernel_platform kernel_sel4_arch)
         set(UseRiscVOpenSBI
             OFF
             CACHE BOOL "" FORCE
+        )
+        set(IMAGE_START_ADDR
+            0x85000000
+            CACHE INTERNAL "" FORCE
         )
     endif()
     if(KernelPlatformBananapiF3)
