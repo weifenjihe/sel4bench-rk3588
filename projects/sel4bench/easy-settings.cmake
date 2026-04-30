@@ -73,7 +73,7 @@ set(IPC
 
 # default is ON
 set(IRQUSER
-    ON
+    OFF
     CACHE BOOL "Application to benchmark seL4 IRQs"
 )
 
@@ -91,7 +91,7 @@ set(SIGNAL
 
 # default is ON
 set(MAPPING
-    ON
+    OFF
     CACHE BOOL "Application to benchmark seL4 mapping a series of pages"
 )
 

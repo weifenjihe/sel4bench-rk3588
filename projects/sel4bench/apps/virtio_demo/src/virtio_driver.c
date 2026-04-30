@@ -120,9 +120,9 @@ static void prime_rx_queue(void)
     }
 
     avail->flags = VRING_AVAIL_F_NO_INTERRUPT;
-    __asm__ volatile("dmb ish" ::: "memory");
+    __asm__ volatile("fence rw, rw" ::: "memory");
     avail->idx = rx_queue_num;
-    __asm__ volatile("dmb ish" ::: "memory");
+    __asm__ volatile("fence rw, rw" ::: "memory");
 
     vt_write32(VIRTIO_MMIO_QUEUE_NOTIFY, 0);
 }
@@ -266,12 +266,12 @@ int virtio_console_send(const char *msg) {
     avail->ring[idx] = 0; // Use Descriptor 0
 
     // Memory Barrier
-    __asm__ volatile("dmb ish" ::: "memory");
+    __asm__ volatile("fence rw, rw" ::: "memory");
 
     avail->idx++; // Increment Available Index
 
     // Memory Barrier
-    __asm__ volatile("dmb ish" ::: "memory");
+    __asm__ volatile("fence rw, rw" ::: "memory");
 
     // 4. Notify Device (Kick Queue 1)
     vt_write32(VIRTIO_MMIO_QUEUE_NOTIFY, 1);
@@ -317,9 +317,9 @@ int virtio_console_recv(char *buf, size_t buf_sz) {
     struct vring_avail *avail = (struct vring_avail *)(shmem_base + VQ0_AVAIL_OFFSET);
     uint16_t aidx = avail->idx % rx_queue_num;
     avail->ring[aidx] = (uint16_t)elem.id;
-    __asm__ volatile("dmb ish" ::: "memory");
+    __asm__ volatile("fence rw, rw" ::: "memory");
     avail->idx++;
-    __asm__ volatile("dmb ish" ::: "memory");
+    __asm__ volatile("fence rw, rw" ::: "memory");
     vt_write32(VIRTIO_MMIO_QUEUE_NOTIFY, 0);
 
     uint32_t isr = vt_read32(VIRTIO_MMIO_INTERRUPT_STATUS);
