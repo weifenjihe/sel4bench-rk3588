@@ -11,11 +11,15 @@
 #if defined(CONFIG_PLAT_HIFIVE_P550)
 #define VIRTIO_MMIO_PADDR         0x10007000
 #define VIRTIO_MMIO_SIZE          0x1000
+#define VIRTIO_MMIO_CACHED        0
+#define VIRTIO_SHMEM_CACHED       0
 #else
 #define VIRTIO_MMIO_PADDR         0xff9e0000
 #define VIRTIO_MMIO_SIZE          0x200
+#define VIRTIO_MMIO_CACHED        0
+#define VIRTIO_SHMEM_CACHED       1
 #endif
-#define VIRTIO_SHARED_MEM_PADDR   0x09400000  // Shared memory for DMA/Vrings
+#define VIRTIO_SHARED_MEM_PADDR   0x83f00000  // Shared memory for DMA/Vrings
 #define VIRTIO_SHARED_MEM_SIZE    0x10000     // 64KB
 
 // Initialize and setup the VirtIO device
