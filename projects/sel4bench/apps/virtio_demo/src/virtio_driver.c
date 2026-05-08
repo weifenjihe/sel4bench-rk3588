@@ -9,6 +9,7 @@
 #include <virtio/virtio_config.h>
 #include <virtio/virtio_con.h>
 #include "virtio_driver.h"
+#include <sel4bench/sel4bench.h>
 
 // VirtIO MMIO register offsets (MMIO v2 / modern)
 #define VIRTIO_MMIO_MAGIC_VALUE     0x000
@@ -75,7 +76,7 @@ static uint16_t rx_last_used_idx;
 static uint16_t rx_queue_num;
 static uint16_t tx_queue_num;
 
-// MMIO helpers are used by queue setup helpers below.
+// Forward declarations for MMIO helpers
 static uint32_t vt_read32(int offset);
 static void vt_write32(int offset, uint32_t val);
 static void vt_write64(int low_off, int high_off, uint64_t val);
@@ -125,6 +126,11 @@ static void prime_rx_queue(void)
     __asm__ volatile("fence rw, rw" ::: "memory");
 
     vt_write32(VIRTIO_MMIO_QUEUE_NOTIFY, 0);
+}
+
+static void tx_wait_for_slot(void)
+{
+    /* baseline: no special in-flight waiting logic; keep function for compatibility */
 }
 
 // Helper: MMIO Read/Write
@@ -240,10 +246,8 @@ int virtio_console_send(const char *msg) {
     
     int len = strlen(msg);
     if (len > 100) len = 100; // Cap size for demo
-
     // 1. Place data into payload area.
     volatile char *data_area = (volatile char*)(shmem_base + VQ1_DATA_OFFSET);
-    
     for (int i = 0; i < len; i++) {
         data_area[i] = msg[i];
     }

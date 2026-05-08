@@ -200,34 +200,29 @@ int main(void) {
     }
     debug_puts("VirtIO Driver Initialized\n");
 
-    // 5. Send Message to Linux
-    virtio_console_send("Hello from seL4 VirtIO!\n");
+    // 5. Initialize perf and run automated benchmarks (no interactive RX loop)
     virtio_perf_init();
-    debug_puts("Type: bench help\n");
+    virtio_console_send("Hello from seL4 VirtIO!\n");
 
-    // Poll receive path: Linux -> seL4
-    char rx_buf[256];
-    char line_buf[512];
-    size_t line_len = 0;
+    virtio_perf_stats_t st;
+
+    // Run TX benchmark: 100 iterations, 64 bytes (adjustable)
+    if (virtio_perf_bench_send(100, 64, &st) == 0) {
+        print_perf_stats("BENCH SEND", &st);
+    } else {
+        debug_puts("BENCH ERR: send benchmark failed\n");
+    }
+
+    // Run RX poll benchmark: 100 iterations
+    if (virtio_perf_bench_poll_recv(100, &st) == 0) {
+        print_perf_stats("BENCH POLL", &st);
+    } else {
+        debug_puts("BENCH ERR: poll benchmark failed\n");
+    }
+
+    debug_puts("Bench finished — idling.\n");
     while (1) {
-        int handled = 0;
-        int r;
-        while ((r = virtio_console_recv(rx_buf, sizeof(rx_buf))) > 0) {
-            handled = 1;
-            for (int i = 0; i < r; i++) {
-                char c = rx_buf[i];
-                if (line_len < sizeof(line_buf) - 1) {
-                    line_buf[line_len++] = c;
-                }
-                if (c == '\n' || line_len == sizeof(line_buf) - 1) {
-                    flush_rx_line(line_buf, &line_len);
-                }
-            }
-        }
-        if (!handled) {
-            flush_rx_line(line_buf, &line_len);
-            seL4_Yield();
-        }
+        seL4_Yield();
     }
     
     return 0;
