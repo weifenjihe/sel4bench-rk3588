@@ -213,6 +213,9 @@ int main(void) {
         debug_puts("BENCH ERR: send benchmark failed\n");
     }
 
+    // Divider between send and poll results
+    debug_puts("----- SEND/POLL DIVIDER -----\n");
+
     // Run RX poll benchmark: 100 iterations
     if (virtio_perf_bench_poll_recv(100, &st) == 0) {
         print_perf_stats("BENCH POLL", &st);

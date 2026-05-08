@@ -75,6 +75,10 @@ static volatile char *shmem_base;
 static uint16_t rx_last_used_idx;
 static uint16_t rx_queue_num;
 static uint16_t tx_queue_num;
+// TX rotating index and batching
+static uint32_t tx_next_idx = 0;
+static uint32_t tx_pending_notify = 0;
+static uint32_t tx_notify_batch = 1; // conservative default; tune later
 
 // Forward declarations for MMIO helpers
 static uint32_t vt_read32(int offset);
@@ -130,7 +134,8 @@ static void prime_rx_queue(void)
 
 static void tx_wait_for_slot(void)
 {
-    /* baseline: no special in-flight waiting logic; keep function for compatibility */
+    /* no-op: avoid stalling send path; rely on immediate notify and device to consume */
+    (void)shmem_base; (void)tx_queue_num;
 }
 
 // Helper: MMIO Read/Write
@@ -246,28 +251,31 @@ int virtio_console_send(const char *msg) {
     
     int len = strlen(msg);
     if (len > 100) len = 100; // Cap size for demo
-    // 1. Place data into payload area.
-    volatile char *data_area = (volatile char*)(shmem_base + VQ1_DATA_OFFSET);
+    // 1. Ensure there's a free slot to use
+    tx_wait_for_slot();
+
+    // 2. Place data into a per-descriptor payload slot (round-robin)
+    uint16_t desc_id = (uint16_t)(tx_next_idx % tx_queue_num);
+    volatile char *data_area = (volatile char*)(shmem_base + VQ1_DATA_OFFSET + (desc_id * VQ_DATA_SIZE));
     for (int i = 0; i < len; i++) {
         data_area[i] = msg[i];
     }
 
-    // 2. Setup Descriptor [0]
+    // 3. Setup Descriptor
     struct vring_desc *desc = (struct vring_desc *)(shmem_base + VQ1_DESC_OFFSET);
-    desc[0].addr = VIRTIO_SHARED_MEM_PADDR + VQ1_DATA_OFFSET;
-    desc[0].len = len;
-    desc[0].flags = 0; // No next descriptor
-    desc[0].next = 0;
+    desc[desc_id].addr = VIRTIO_SHARED_MEM_PADDR + VQ1_DATA_OFFSET + (desc_id * VQ_DATA_SIZE);
+    desc[desc_id].len = len;
+    desc[desc_id].flags = 0; // No next descriptor
+    desc[desc_id].next = 0;
 
-    // 3. Update avail ring for queue kick.
+    // 4. Update avail ring
     struct vring_avail *avail = (struct vring_avail *)(shmem_base + VQ1_AVAIL_OFFSET);
-
     // This demo is TX-only and does not bind an IRQ handler in userspace.
     // Ask device to suppress used-buffer interrupts.
     avail->flags = VRING_AVAIL_F_NO_INTERRUPT;
-    
-    int idx = avail->idx % tx_queue_num;
-    avail->ring[idx] = 0; // Use Descriptor 0
+
+    int aidx = avail->idx % tx_queue_num;
+    avail->ring[aidx] = desc_id;
 
     // Memory Barrier
     __asm__ volatile("fence rw, rw" ::: "memory");
@@ -277,14 +285,21 @@ int virtio_console_send(const char *msg) {
     // Memory Barrier
     __asm__ volatile("fence rw, rw" ::: "memory");
 
-    // 4. Notify Device (Kick Queue 1)
-    vt_write32(VIRTIO_MMIO_QUEUE_NOTIFY, 1);
+    // 5. Batch notify: only kick the device every few sends to reduce MMIO cost.
+    tx_pending_notify++;
+    if (tx_pending_notify >= tx_notify_batch) {
+        vt_write32(VIRTIO_MMIO_QUEUE_NOTIFY, 1);
+        tx_pending_notify = 0;
+    }
 
     // If backend still raises an interrupt, proactively ack to avoid IRQ storm.
     uint32_t isr = vt_read32(VIRTIO_MMIO_INTERRUPT_STATUS);
     if (isr) {
         vt_write32(VIRTIO_MMIO_INTERRUPT_ACK, isr);
     }
+
+    // advance rotating index for next send
+    tx_next_idx++;
 
     return 0;
 }

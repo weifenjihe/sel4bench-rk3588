@@ -131,19 +131,10 @@ int virtio_perf_bench_send(uint32_t iterations, uint32_t payload_bytes,
         virtio_console_send(msg);
         SEL4BENCH_READ_CCNT(end);
         stats_push(out, delta_cycles(start, end));
-        // Detailed per-iteration debug: SEND_IT
-        debug_puts("SEND_IT "); debug_put_u64(i); debug_puts(" "); debug_put_u64(delta_cycles(start, end)); debug_puts(" cycles\n");
+        (void)i; // no per-iteration prints to avoid perturbing timings
     }
 
     stats_finish(out);
-    // Summary line for end-to-host send latency
-    debug_puts("END_SCORE iters="); debug_put_u64(out->iterations);
-    if (out->payload_bytes > 0) { debug_puts(" bytes="); debug_put_u64(out->payload_bytes); }
-    debug_puts(" min="); debug_put_u64(out->min_cycles);
-    debug_puts(" avg="); debug_put_u64(out->avg_cycles);
-    debug_puts(" max="); debug_put_u64(out->max_cycles);
-    debug_puts(" total="); debug_put_u64(out->total_cycles);
-    debug_puts(" cycles\n");
     (void)out; // no per-phase in baseline
     return 0;
 }
@@ -166,17 +157,9 @@ int virtio_perf_bench_poll_recv(uint32_t iterations, virtio_perf_stats_t *out)
         (void)virtio_console_recv(tmp, sizeof(tmp));
         SEL4BENCH_READ_CCNT(end);
         stats_push(out, delta_cycles(start, end));
-        // Detailed per-iteration debug: POLL_IT
-        debug_puts("POLL_IT "); debug_put_u64(i); debug_puts(" "); debug_put_u64(delta_cycles(start, end)); debug_puts(" cycles\n");
+        (void)i; // no per-iteration prints to avoid perturbing timings
     }
 
     stats_finish(out);
-    // Summary line for poll latency
-    debug_puts("POLL_SCORE iters="); debug_put_u64(out->iterations);
-    debug_puts(" min="); debug_put_u64(out->min_cycles);
-    debug_puts(" avg="); debug_put_u64(out->avg_cycles);
-    debug_puts(" max="); debug_put_u64(out->max_cycles);
-    debug_puts(" total="); debug_put_u64(out->total_cycles);
-    debug_puts(" cycles\n");
     return 0;
 }
